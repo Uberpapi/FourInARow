@@ -55,9 +55,8 @@ dRow([[]|Rest], ColNr, _):-
   dRow(Rest, NewColNr, 1).
 dRow(M, ColNr, RowNr):-
   listLength(M, Count),
-  print(Count), nl,
   Count > 3,
-  diagonal(M, RowNr, ColNr).
+  diagonal(M, RowNr, ColNr), print('Diagonal').
 dRow([[_|T]|Rest], ColNr, RowNr):-
   NewRowNr is RowNr + 1,
   dRow([T|Rest], ColNr, NewRowNr).
@@ -89,9 +88,7 @@ diagonalD([[H|T]|Rest], RowNr, ColNr, Count, Ele):-
   NewRowNr is RowNr - 1,
   NewColNr is ColNr + 1,
   getRow([[H|T]|Rest], NewColNr, Row),
-  print(Row), print(NewRowNr), nl,
   getElement(Row, NewRowNr, Ele),
-  print(Ele), nl,
   NewCount is Count + 1,
   diagonalD(Rest, NewRowNr, ColNr, NewCount, Ele).
 
@@ -104,7 +101,7 @@ getRow([_|Rest], Count, Row):-
 /*Returns the nth Element */
 getElement([Element|_], 1, Element).
 getElement([_|Rest], Count, Element):-
-  NewCount is Count - 1, print(NewCount), nl,
+  NewCount is Count - 1,
   getElement(Rest, NewCount, Element).
 
 /*Returns a Matrix transposed*/
