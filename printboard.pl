@@ -1,10 +1,11 @@
 :-module(printboard, [print/0]).
 :-use_module(game).
+:-use_module(play).
 :-use_module(rules).
 
 /* Prints our current board */
 print:-
-  createBoard(6, Q), transformValue(Q, A),
+  board(Q), transformValue(Q, A),
   getRow(A, 1, B), getRow(A, 2, C), getRow(A, 3, D), getRow(A, 4, E), getRow(A, 5, F), getRow(A, 6, G), getRow(A, 7, H),
   getElement(B, 1, A1), getElement(B, 2, A2), getElement(B, 3, A3), getElement(B, 4, A4), getElement(B, 5, A5), getElement(B, 6, A6),
   getElement(C, 1, B1), getElement(C, 2, B2), getElement(C, 3, B3), getElement(C, 4, B4), getElement(C, 5, B5), getElement(C, 6, B6),
@@ -27,7 +28,7 @@ print:-
   format('       |~t~w~10|~t|~49|~n', ['-----------------------------------------'] ),
   format('     6 |  ~t~w~10|~t~w~t~2+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~t~1+~w~|~49||~n',[A6,'  |  ', B6,'  |  ',C6,'  |  ',D6, '  |  ',E6,'  |  ',F6, '  |  ', G6]),
   format('        ~`-t~49|~n', []),
-  print('          A     B     C     D     E     F     G ').
+  print('          A     B     C     D     E     F     G '), nl.
 
 
 /* Transforms all non x/o to another

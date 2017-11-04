@@ -1,8 +1,11 @@
-:-module(game, [createBoard/2, hej/0]).
+:-module(game, [createBoard/2, board/1, setboard/1]).
 :-use_module(printboard).
 
+/*We use dynamics to store variables */
+:- dynamic board/1.
+
 /*Creates a a game Board with the
-  size LengthXLength           */
+  size N x N+1           */
 createBoard(Length, Result):-
   createBoard(Length, [], 0, Res, 49),
   reverseList(Res, Result).
@@ -36,3 +39,9 @@ reverseList(L, R):-
 reverseList([], R, R).
 reverseList([H|T], Acc, R):-
   reverseList(T, [H|Acc], R).
+
+setboard(_):-
+  retract(board(_)),
+  fail.
+setboard(X):-
+  assert(board(X)).
