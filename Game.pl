@@ -7,9 +7,10 @@ createBoard(Length, Result):-
   createBoard(Length, [], 0, Res, 49),
   reverseList(Res, Result).
 
-createBoard(Length, Result, Length, Result, _).
+createBoard(Length, Result, Count, Result, _):-
+  NewCount is Count - 1, NewCount == Length.
 createBoard(Length, New, Count, Result, RowNr):-
-  Count < Length,
+  Count =< Length,
   fillList(Length, Res, RowNr),
   NewCount is Count + 1,
   NewRowNr is RowNr + 1,
