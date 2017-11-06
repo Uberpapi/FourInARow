@@ -6,12 +6,14 @@
 player(p1, 'Player 1').
 player(p2, 'Player 2').
 
+/*Infinite echo where we play */
 echo:-
   write('>>'),
   read(X),
-  call(X),
-  echo.
+  ( acceptedCommands(X) -> call(X), echo
+  ; print('That is not a valid command, try again mate.'), nl, echo).
 
+/* Creates the board and starts the game */
 start:-
   retractall(board(_)),
   setplayerturn(p1),
@@ -23,16 +25,21 @@ start:-
   print('Choose the column you wish to put your tile using the letters. '), nl,
   print('             Player 1 begins, Good Luck! :)'), nl.
 
-rematch:-
+/*Refreshes the board */
+refresh:-
   retractall(board(_)),
   createBoard(6, Q),
-  setboard(Q),
+  setboard(Q).
+
+/*Initiates rematch*/
+rematch:-
   print,
   playerturn(X),
   player(X, Turn),
   print(Turn),
   print(' begins this time! Column D might be a good spot to start...'), nl.
 
+/* All the commands avalible for placing tiles */
 a:-
   board(Q),
   place(Q, 1, M),
@@ -40,8 +47,8 @@ a:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
 b:-
@@ -51,8 +58,8 @@ b:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
 
@@ -63,8 +70,8 @@ c:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
 d:-
@@ -74,8 +81,8 @@ d:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
 e:-
@@ -85,8 +92,8 @@ e:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
 f:-
@@ -96,8 +103,8 @@ f:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
 g:-
@@ -107,6 +114,19 @@ g:-
   setboard(M),
   player(X, Turn),
   print,
-  ( row(M), X == p1 -> print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
-  ; row(M), X == p2 -> print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
+
+/*All the accepted commands
+  we can handle as inputs  */
+acceptedCommands(X):-
+  ( X == a -> true
+  ; X == b -> true
+  ; X == c -> true
+  ; X == a -> true
+  ; X == b -> true
+  ; X == c -> true
+  ; X == rematch -> true
+  ; X == start -> true
+  ; fail).
