@@ -1,10 +1,10 @@
 :-module(game, [createBoard/2, board/1, playerturn/1, setboard/1,
-                setplayerturn/1, reverseList/2]).
+                setplayerturn/1, reverseList/2, setturns/1, turns/1]).
 
 /*We use dynamics to store variables */
 :- dynamic board/1.
 :- dynamic playerturn/1.
-
+:- dynamic turns/1.
 /*Creates a a game Board with the
   size N x N+1           */
 createBoard(Length, Result):-
@@ -51,3 +51,8 @@ setplayerturn(_):-
   fail.
 setplayerturn(X):-
   assert(playerturn(X)).
+setturns(_):-
+  retract(turns(_)),
+  fail.
+setturns(X):-
+  assert(turns(X)).

@@ -95,8 +95,10 @@ place([Row|T], 1, ColNr, [NewRow|Y]):-
   playerturn(X),
   reverseList(Row, RevRow),
   element(RevRow, RevNewRow, X, Swap),
-    ( Swap == yes, X == p1 -> setplayerturn(p2)
-    ; Swap == yes, X == p2 -> setplayerturn(p1)
+  turns(Z),
+  P is Z + 1,
+    ( Swap == yes, X == p1 -> setplayerturn(p2), setturns(P), print(P)
+    ; Swap == yes, X == p2 -> setplayerturn(p1), setturns(P), print(P)
     ; setplayerturn(X)),
   reverseList(RevNewRow, NewRow),
   place(T, 0, _, Y).

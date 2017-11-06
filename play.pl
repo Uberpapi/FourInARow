@@ -19,6 +19,7 @@ start:-
   setplayerturn(p1),
   createBoard(6, Q),
   setboard(Q),
+  setturns(0),
   print,
   print('             Welcome to our very decent game. '),nl,
   print('             Player 1 is Xs and Player 2 is Os.'),nl,
@@ -29,7 +30,8 @@ start:-
 refresh:-
   retractall(board(_)),
   createBoard(6, Q),
-  setboard(Q).
+  setboard(Q),
+  setturns(0).
 
 /*Initiates rematch*/
 rematch:-
@@ -46,8 +48,10 @@ a:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -57,8 +61,10 @@ b:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -69,8 +75,10 @@ c:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -80,8 +88,10 @@ d:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -91,8 +101,10 @@ e:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -102,8 +114,10 @@ f:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -113,8 +127,10 @@ g:-
   playerturn(X),
   setboard(M),
   player(X, Turn),
+  turns(Z),
   print,
-  ( row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ;print(Turn), print(' next!'), nl).
 
@@ -124,9 +140,11 @@ acceptedCommands(X):-
   ( X == a -> true
   ; X == b -> true
   ; X == c -> true
-  ; X == a -> true
-  ; X == b -> true
-  ; X == c -> true
+  ; X == d -> true
+  ; X == e -> true
+  ; X == f -> true
+  ; X == g -> true
   ; X == rematch -> true
   ; X == start -> true
+  ; X == end_of_file  -> true
   ; fail).
