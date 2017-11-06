@@ -1,6 +1,6 @@
-:-module(rules, [getRow/3, getElement/3, listLength/2]).
+:-module(rules, [row/1, getRow/3, getElement/3, listLength/2,
+                 place/3, element/4]).
 :-use_module(game).
-:-use_module(printboard).
 
 
 row(M):-
@@ -25,7 +25,7 @@ dRow([[]|Rest], ColNr, _):-
 dRow(M, ColNr, RowNr):-
   listLength(M, Count),
   Count > 3,
-  diagonal(M, RowNr, ColNr), print('Diagonal').
+  diagonal(M, RowNr, ColNr).
 dRow([[_|T]|Rest], ColNr, RowNr):-
   NewRowNr is RowNr + 1,
   dRow([T|Rest], ColNr, NewRowNr).
@@ -33,10 +33,10 @@ dRow([[_|T]|Rest], ColNr, RowNr):-
 /*Chooses where to check from depending on
   which RowNumber we are currently on   */
 diagonal([[H|T]|Rest], RowNr, ColNr):-
-  RowNr < 3,
+  RowNr =< 3,
   diagonalU([[H|T]|Rest], RowNr, ColNr, 0,  H).
 diagonal([[H|T]|Rest], RowNr, ColNr):-
-  RowNr > 3,
+  RowNr >= 3,
   diagonalD([[H|T]|Rest], RowNr, ColNr, 0,  H).
 
 /*Checking if we have 4 in a row
@@ -87,3 +87,34 @@ getFirst([[H|T]|Rest], [T|Q], [H|Res]):-
 listLength([], 0).
 listLength([_|Rest], NewLength):-
   listLength(Rest, Length), NewLength is Length + 1.
+
+place(Q, Nr, Y):-
+  place(Q, Nr, Nr, Y).
+
+place([], _, _, []).
+place([Row|T], 1, ColNr, [NewRow|Y]):-
+  playerturn(X),
+  reverseList(Row, RevRow), print(RevRow), nl,
+  element(RevRow, RevNewRow, X, Swap),
+    ( Swap == yes, X == p1 -> setplayerturn(p2)
+    ; Swap == yes, X == p2 -> setplayerturn(p1)
+    ; setplayerturn(X)),
+  reverseList(RevNewRow, NewRow), print(NewRow), nl,
+  place(T, 0, _, Y).
+place([H|T], Nr, ColNr, [H|Y]):-
+  NewNr is Nr - 1,
+  place(T, NewNr, ColNr, Y).
+
+element([], [], done, yes):- !.
+element([], [], _, no):-
+  print('This column is alredy full, please select another one or forfeit to your obviously superior opponent.'), nl.
+element([H|T], [H|Y], done, Swap):-
+    element(T, Y, done, Swap).
+element([o|T], [o|Y], Turn, Swap):-
+    element(T, Y, Turn, Swap).
+element([x|T], [x|Y], Turn, Swap):-
+   element(T, Y, Turn, Swap).
+element([H|T], [x|Y], p1, Swap):-
+   print(H),  nl, element(T, Y, done, Swap).
+element([H|T], [o|Y], p2, Swap):-
+   element(T, Y, done, Swap).
