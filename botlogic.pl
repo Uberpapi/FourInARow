@@ -24,26 +24,22 @@ analyse(Q, Decision):-
   checkRow(Q, Z).
 
 sortDecision(Q, Decision):-
-  print(Q), nl,
   sortDecision(Q, [], Decision).
 
 sortDecision([], [C,D], C).
 sortDecision([[A,B]|Rest], [], Decision):-
-  value(X, A),
-    print(X), nl,
+  !, value(X, A),
   sortDecision(Rest, [X, B], Decision).
 sortDecision([[A,B]|Rest], [C,D], Decision):-
   B == D,
-  print('räveamsd'), nl,
   value(X, A),
   weight(X, Y),
   weight(C, K),
   Y < K,
-  sortDecision(Rest, [X, B], Decision).
+  !, sortDecision(Rest, [X, B], Decision).
 sortDecision([[A,B]|Rest], [C,D], Decision):-
   B > D,
-  print('roligt'), nl,
-  value(X, A),
+  !, value(X, A),
   sortDecision(Rest, [X, B], Decision).
 sortDecision([_|Rest], [C,D], Decision):-
   sortDecision(Rest, [C,D], Decision).
