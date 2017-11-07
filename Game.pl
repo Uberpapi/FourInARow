@@ -5,6 +5,7 @@
 :- dynamic board/1.
 :- dynamic playerturn/1.
 :- dynamic turns/1.
+
 /*Creates a a game Board with the
   size N x N+1           */
 createBoard(Length, Result):-

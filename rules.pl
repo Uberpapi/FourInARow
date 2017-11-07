@@ -97,8 +97,8 @@ place([Row|T], 1, _, [NewRow|Y]):-
   element(RevRow, RevNewRow, X, Swap),
   turns(Z),
   P is Z + 1,
-    ( Swap == yes, X == p1 -> setplayerturn(p2), setturns(P), print(P)
-    ; Swap == yes, X == p2 -> setplayerturn(p1), setturns(P), print(P)
+    ( Swap == yes, X == p1 -> setplayerturn(p2), setturns(P)
+    ; Swap == yes, X == p2 -> setplayerturn(p1), setturns(P)
     ; setplayerturn(X)),
   reverseList(RevNewRow, NewRow),
   place(T, 0, _, Y).

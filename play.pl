@@ -35,6 +35,7 @@ refresh:-
 
 /*Initiates rematch*/
 rematch:-
+  refresh,
   print,
   playerturn(X),
   player(X, Turn),
