@@ -1,5 +1,5 @@
 :-module(rules, [row/1, getRow/3, getElement/3, listLength/2,
-                 place/3, element/4, dRow/1, yRow/1]).
+                 place/3, element/4, dRow/1, yRow/1, tMatrix/2]).
 :-use_module(game).
 
 
