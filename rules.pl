@@ -1,5 +1,5 @@
 :-module(rules, [row/1, getRow/3, getElement/3, listLength/2,
-                 place/3, element/4, dRow/1]).
+                 place/3, element/4, dRow/1, yRow/1]).
 :-use_module(game).
 
 
@@ -91,7 +91,7 @@ place(Q, Nr, Y):-
   place(Q, Nr, Nr, Y).
 
 place([], _, _, []).
-place([Row|T], 1, ColNr, [NewRow|Y]):-
+place([Row|T], 1, _, [NewRow|Y]):-
   playerturn(X),
   reverseList(Row, RevRow),
   element(RevRow, RevNewRow, X, Swap),
@@ -117,7 +117,7 @@ element([o|T], [o|Y], Turn, Swap):-
    element(T, Y, Turn, Swap).
 element([x|T], [x|Y], Turn, Swap):-
    element(T, Y, Turn, Swap).
-element([H|T], [x|Y], p1, Swap):-
+element([_|T], [x|Y], p1, Swap):-
    element(T, Y, done, Swap).
-element([H|T], [o|Y], p2, Swap):-
+element([_|T], [o|Y], p2, Swap):-
    element(T, Y, done, Swap).
