@@ -15,34 +15,71 @@ weight(a, 4). weight(g, 4). % Because edges are worst
 maya(Act):-
   board(Q),
   oBecomesx(Q, M),
-  findall(Decision, analyse(Q, Decision), OffDecisions), %Offensive decisions
-  findall(Decision, analyse(M, Decision), DefDecision), %Defensive decisions
-  whatToDo(OffDecisions, DefDecisions, Act),
-  print(' bot puts in '), print(Act), nl.
+  findall(Decision, analyse(Q, Decision), OffDecisions),print('Offensive decisions is '), print(OffDecisions), nl, %Offensive decisions
+  findall(Decision, analyse(M, Decision), DefDecisions),print('Defensive decisions is '), print(DefDecisions), nl, %Defensive decisions
+  whatToDoOffense(OffDecisions, ActOff), print('Offensive decision is '), print(ActOff), nl,
+  whatToDoDefense(DefDecisions, ActDef), print('Defensive decision is '), print(ActDef), nl,
+  offOrDef(ActOff, ActDef, [DeforOff, Act]),
+  print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl.
 
-whatToDo(OffDecisions, DefDecisions, Act):-
-  whatToDo(OffDecisions, DefDecisions, [], Act).
+offOrDef([ValueOff, ColOff, LengthToRowOff], [ValueDef, ColDef, LengthToRowDef], [offensive, ColOff]):-
+  ValueOff == 3,
+  LengthToRowOff == 0, !.
+offOrDef([_, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef]):-
+  ValueDef > 1,
+  LengthToRowDef == 0, !.
+offOrDef([ValueOff, ColOff, LengthToRowOff], [ValueDef, ColDef, LengthToRowDef],[defensive, ColDef]):-
+  ValueOff < ValueDef,
+  (LengthToRowDef == 0 ; LengthToRowDef == 2), !.
+offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef]):-
+  ValueDef > 0,
+  ValueOff == ValueDef,
+  LengthToRowDef == 0, !.
+offOrDef([_, ColOff, _],[_, _, _], [offensive, ColOff]).
 
-whatToDo([], [], [_, Act, _], Act).
-whatToDo([[Count, Col, LengthToRow]|Rest], DefDecisions, [], Act):-
-  whatToDo(Rest, DefDecisions, [Count, Col, LengthToRow], Act).
-whatToDo([[Count, Col, LengthToRow]|Rest], DefDecisions, [A, _, _], Act):-
-  A < Count,
-  whatToDo(Rest, DefDecisions, [Count, Col, LengthToRow], Act).
-whatToDo([[Count, Col, LengthToRow]|Rest], DefDecisions, [_, _, A], Act):-
-  LengthToRow < A,
-  whatToDo(Rest, DefDecisions, [Count, Col, LengthToRow], Act).
-whatToDo([_|Rest], DefDecisions, [A, B, C], Act):-
-  whatToDo(Rest, DefDecisions, [A, B, C], Act).
-whatToDo([], [[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
-  A < Count,
-  whatToDo([], Rest, [Count, Col, LengthToRow], Act).
-whatToDo([], [[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+whatToDoOffense([], [0, f, 0]).
+whatToDoOffense(OffDecisions, Act):-
+  whatToDoOffense(OffDecisions, [], Act).
+whatToDoOffense([], Act, Act).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [], Act):-
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+  A < Count, !,
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, _, B], Act):-
+  Count == A,
+  LengthToRow < B, !,
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act):-
   A == Count,
-  LengthToRow == 0,
-  whatToDo([], Rest, [Count, Col, LengthToRow], Act).
-whatToDo([], [_|Rest], [A, B, C], Act):-
-  whatToDo([], Rest, [A, B, C], Act).
+  LengthToRow == C,
+  weight(B, X), weight(Col, Y),
+  Y < X, !,
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoOffense([_|Rest], [A, B, C], Act):-
+  whatToDoOffense(Rest, [A, B, C], Act).
+
+whatToDoDefense([], [0, a, 0]).
+whatToDoDefense(DefDecisions, Act):-
+  whatToDoDefense(DefDecisions, [], Act).
+whatToDoDefense([], Act, Act).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [], Act):-
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+  Count > A,
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, _, B], Act):-
+  A == Count,
+  LengthToRow < B,
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act):-
+  A == Count,
+  LengthToRow == C,
+  weight(B, X), weight(Col, Y),
+  Y < X,
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
+whatToDoDefense([_|Rest], [A, B, C], Act):-
+  whatToDoDefense(Rest, [A, B, C], Act).
 
 
 /*Swaps all o to x and vice versa*/
@@ -103,13 +140,16 @@ sortXDecision(Q, [[Value, RowNr, List]|Decisions], [A, _, _], Decision):- %1st w
   A < Value, !,
   evaluateX(Q, RowNr, List, [Col, LengthToRow]),
   sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
-sortXDecision(Q, [[Value, RowNr, List]|Decisions], [_, _, A], Decision):- %2nd we prioritize the shortest length we have
-  evaluateX(Q, RowNr, List, [Col, LengthToRow]),                          %left to the row we have the highest Value at
-  LengthToRow < A, !,
-  sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
-sortXDecision(Q, [[Value, RowNr, List]|Decisions], [_, A, _], Decision):- %3rd we prioritize middle placement
+sortXDecision(Q, [[Value, RowNr, List]|Decisions], [A, _, B], Decision):- %2nd we prioritize the shortest length we have
   evaluateX(Q, RowNr, List, [Col, LengthToRow]),
-  weight(Col, X), weight(A, Y),
+  A == Value,
+  LengthToRow < B, !,
+  sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
+sortXDecision(Q, [[Value, RowNr, List]|Decisions], [A, B, C], Decision):- %3rd we prioritize middle placement
+  evaluateX(Q, RowNr, List, [Col, LengthToRow]),
+  weight(Col, X), weight(B, Y),
+  A == Value,
+  LengthToRow == B,
   Y > X, !,
   sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
 sortXDecision(Q, [_|Decisions], [A, B, C], Decision):- %Satisfies rest of the cases
@@ -126,13 +166,16 @@ sortDDecision(Q, [[Value, List]|Decisions], [A,_,_], Decision):-
   A < Value, !,
   evaluateD(Q, List, [Col, LengthToRow]),
   sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision). %2nd we prioritize the shortest length we have
-sortDDecision(Q, [[Value, List]|Decisions], [_, _, A], Decision):-  %left to the row we have the highest Value at
+sortDDecision(Q, [[Value, List]|Decisions], [A, _, B], Decision):-  %left to the row we have the highest Value at
   evaluateD(Q, List, [Col, LengthToRow]),
-  LengthToRow < A, !,
+  A == Value,
+  LengthToRow < B, !,
   sortDDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
-sortDDecision(Q, [[Value, List]|Decisions], [_, A, _], Decision):- %3rd we prioritize middle placement
+sortDDecision(Q, [[Value, List]|Decisions], [A, B, C], Decision):- %3rd we prioritize middle placement
   evaluateD(Q, List, [Col, LengthToRow]),
-  weight(Col, X), weight(A, Y),
+  weight(Col, X), weight(B, Y),
+  A == Value,
+  LengthToRow == C,
   Y > X, !,
   sortDDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
 sortDDecision(Q, [[_, _]|Decisions], [A, B, C], Decision):- %Satisfies rest of the cases
