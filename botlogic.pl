@@ -1,5 +1,5 @@
 :-module(botlogic, [analyse/2, checkYRow/3, checkXRow/4, evaluateX/3,
-                    botact/0, sortYDecision/2, countUp/5, countDown/5, checkDRow/4]).
+                    maya/1]).
 :-use_module(game).
 :-use_module(rules).
 
@@ -12,15 +12,57 @@ weight(c, 2). weight(e, 2).
 weight(f, 3). weight(b, 3).
 weight(a, 4). weight(g, 4). % Because edges are worst
 
-botact:-
-  createBoard(6, Q),
-  findall(Decision, analyse(Q, Decision), Decisions),
-  print(Decisions).
-  %call(Decision).
+maya(Act):-
+  board(Q),
+  oBecomesx(Q, M),
+  findall(Decision, analyse(Q, Decision), OffDecisions), %Offensive decisions
+  findall(Decision, analyse(M, Decision), DefDecision), %Defensive decisions
+  whatToDo(OffDecisions, DefDecisions, Act),
+  print(' bot puts in '), print(Act), nl.
 
-analyse(Q, Decision):-
+whatToDo(OffDecisions, DefDecisions, Act):-
+  whatToDo(OffDecisions, DefDecisions, [], Act).
+
+whatToDo([], [], [_, Act, _], Act).
+whatToDo([[Count, Col, LengthToRow]|Rest], DefDecisions, [], Act):-
+  whatToDo(Rest, DefDecisions, [Count, Col, LengthToRow], Act).
+whatToDo([[Count, Col, LengthToRow]|Rest], DefDecisions, [A, _, _], Act):-
+  A < Count,
+  whatToDo(Rest, DefDecisions, [Count, Col, LengthToRow], Act).
+whatToDo([[Count, Col, LengthToRow]|Rest], DefDecisions, [_, _, A], Act):-
+  LengthToRow < A,
+  whatToDo(Rest, DefDecisions, [Count, Col, LengthToRow], Act).
+whatToDo([_|Rest], DefDecisions, [A, B, C], Act):-
+  whatToDo(Rest, DefDecisions, [A, B, C], Act).
+whatToDo([], [[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+  A < Count,
+  whatToDo([], Rest, [Count, Col, LengthToRow], Act).
+whatToDo([], [[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+  A == Count,
+  LengthToRow == 0,
+  whatToDo([], Rest, [Count, Col, LengthToRow], Act).
+whatToDo([], [_|Rest], [A, B, C], Act):-
+  whatToDo([], Rest, [A, B, C], Act).
+
+
+/*Swaps all o to x and vice versa*/
+oBecomesx([], []).
+oBecomesx([H|T], [L|Res]):-
+  oBecomesx(T, Res), swapOforX(H, L).
+
+swapOforX([], []).
+swapOforX([o|T], [x|Res]):-
+  !, swapOforX(T, Res).
+swapOforX([x|T], [o|Res]):-
+  !, swapOforX(T, Res).
+swapOforX([H|T], [H|Res]):-
+  swapOforX(T, Res).
+
+/*Returns one decision based on the board Vertically,
+  one Horisontally and one Diagonally                */
+analyse(Q, [A, B, 0]):-
   checkYRow(Q, Z, 1),
-  sortYDecision(Z, Decision).
+  sortYDecision(Z, [A, B]).
 analyse(Q, Decision):-
   tMatrix(Q, M),
   checkXRow(M, Z, 1, 6),
@@ -232,13 +274,13 @@ evaluateD(Q, [[A,RowNr]|B], [], Col):-
   !, value(A, X),
   getRow(Q, X, Row),
   tilesamount(Row, L),
-  LengthToRow is RowNr - L, %Since our Row number is counted reversed
+  LengthToRow is RowNr - L,
   evaluateD(Q, B, [A,LengthToRow], Col).
 evaluateD(Q, [[A,RowNr]|B], [_,L], Col):-
   value(A, X),
   getRow(Q, X, Row),
   tilesamount(Row, K),
-  LengthToRow is RowNr - K, %Since our Row number is counted reversed
+  LengthToRow is RowNr - K,
   LengthToRow < L, !,
   evaluateD(Q, B, [A,LengthToRow], Col).
 evaluateD(Q, [_|B], [C,L], Col):-
@@ -251,7 +293,7 @@ positionList([H|T], ColNr, [X|L]):-
  value(X, Res),
  positionList(T, ColNr, L).
 
-tilesamount([], 0).
+tilesamount([], 1).
 tilesamount([o|T], NewAmount):-
   !, tilesamount(T, Amount), NewAmount is Amount + 1.
 tilesamount([x|T], NewAmount):-

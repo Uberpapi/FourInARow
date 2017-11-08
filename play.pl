@@ -2,6 +2,7 @@
 :-use_module(game).
 :-use_module(rules).
 :-use_module(printboard).
+:-use_module(botlogic).
 
 player(p1, 'Player 1').
 player(p2, 'Player 2').
@@ -54,6 +55,7 @@ a:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 b:-
@@ -67,6 +69,7 @@ b:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 
@@ -81,6 +84,7 @@ c:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 d:-
@@ -94,6 +98,7 @@ d:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 e:-
@@ -107,6 +112,7 @@ e:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 f:-
@@ -120,6 +126,7 @@ f:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 g:-
@@ -133,6 +140,7 @@ g:-
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
   ; row(M), X == p1 -> refresh, print('We have a Winner and that is Player 2!!!'), nl, print('If the loser wishes, write rematch.'), nl
   ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'), nl, print('If the loser wishes, write rematch.'), nl
+  ; X == p2 -> maya(Act), call(Act)
   ;print(Turn), print(' next!'), nl).
 
 /*All the accepted commands
@@ -148,4 +156,5 @@ acceptedCommands(X):-
   ; X == rematch -> true
   ; X == start -> true
   ; X == end_of_file  -> true
+  ; X == maya -> true
   ; fail).
