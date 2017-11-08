@@ -44,7 +44,7 @@ rematch:-
 
 /* All the commands avalible for placing tiles */
 a:-
-  board(Q),
+  board(Q), print(Q), nl,
   place(Q, 1, M),
   playerturn(X),
   setboard(M),

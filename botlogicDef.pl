@@ -1,5 +1,4 @@
-:-module(botlogic, [analyse/2, checkYRow/3, checkXRow/4, evaluateX/3,
-                    botact/0, sortYDecision/2, countUp/5, countDown/5, checkDRow/4]).
+module(botlogicDef, []).
 :-use_module(game).
 :-use_module(rules).
 
@@ -32,7 +31,7 @@ analyse(Q, Decision):-
 sortYDecision(Q, Decision):-
   sortYDecision(Q, [], Decision).
 
-sortYDecision([], [C,D], [D,C]).
+sortYDecision([], [C,D], [C,D]).
 sortYDecision([[A,B]|Rest], [], Decision):-
   !, value(X, A),
   sortYDecision(Rest, [X, B], Decision).
@@ -100,7 +99,7 @@ checkYRow([], [], _).
 checkYRow([[_,_,_|[]]|Rest], Decisions, ColNr):-
   !, NewColNr is ColNr + 1,
   checkYRow(Rest, Decisions, NewColNr).
-checkYRow([[A,B,C,D|T]|Rest], [[ColNr,Value]|Decisions], ColNr):-
+checkYRow([[A,B,C,D|T]|Rest], [[Value, ColNr]|Decisions], ColNr):-
   notYBoth([A,B,C,D], Value), !,
   checkYRow([[B,C,D|T]|Rest], Decisions, ColNr).
 checkYRow([[_|T]|Rest], Decisions, ColNr):-
@@ -141,7 +140,7 @@ checkDRow(Q, Decisions, RowNr,  ColNr):-
 countDown(_, _, [0, []], _, 5).
 countDown([H|T], RowNr, [NewCount, Col], ColNr, Nr):-
   NewRowNr is RowNr - 1,
-  getElement(H, RowNr, o), !,
+  getElement(H, RowNr, x), !,
   NewNr is Nr + 1,
   NewColNr is ColNr + 1,
   countDown(T, NewRowNr, [Count, Col], NewColNr, NewNr),
@@ -149,7 +148,7 @@ countDown([H|T], RowNr, [NewCount, Col], ColNr, Nr):-
 countDown([H|T], RowNr, [Count, [[NewCol, RowRevNr]|Col]], ColNr, Nr):-
   NewRowNr is RowNr - 1,
   getElement(H, RowNr, X),
-  X \== x, !,
+  X \== o, !,
   value(NewCol, ColNr),
   RowRevNr is 7 - RowNr,
   NewNr is Nr + 1,
@@ -161,7 +160,7 @@ countDown(_, _, _, _, _):-
 /* Checking diagonally upwards */
 countUp(_, _, [0, []], _, 5).
 countUp([H|T], RowNr, [NewCount, Col], ColNr, Nr):-
-  getElement(H, RowNr, o), !,
+  getElement(H, RowNr, x), !,
   NewRowNr is RowNr + 1,
   NewNr is Nr + 1,
   NewColNr is ColNr + 1,
@@ -170,7 +169,7 @@ countUp([H|T], RowNr, [NewCount, Col], ColNr, Nr):-
 countUp([H|T], RowNr, [Count, [[NewCol, RowRevNr]|Col]], ColNr, Nr):-
   NewRowNr is RowNr + 1,
   getElement(H, RowNr, X),
-  X \== x, !,
+  X \== o, !,
   RowRevNr is 7 - RowNr,
   value(NewCol, ColNr),
   NewNr is Nr + 1,
@@ -182,10 +181,10 @@ countUp(_, _, _, _, _):-
 notYBoth(Q, Value):-
   notYBoth(Q, 0, Value).
 notYBoth([], Value, Value).
-notYBoth([o|T], Value, R):-
+notYBoth([x|T], Value, R):-
 !,  NewValue is Value + 1,
   notYBoth(T, NewValue, R).
-notYBoth([x|_], _, _):-
+notYBoth([o|_], _, _):-
 !,  fail.
 notYBoth([_|T], Value, R):-
   notYBoth(T, Value, R).
@@ -194,11 +193,11 @@ notXBoth(Q, Value, List):-
   notXBoth(Q, 0, Value, [], List, 0).
 
 notXBoth([], Value, Value, List, List, _).
-notXBoth([o|T], Value, R, List, L, Count):-
+notXBoth([x|T], Value, R, List, L, Count):-
   !, NewValue is Value + 1,
   NewCount is Count + 1,
   notXBoth(T, NewValue, R, List, L, NewCount).
-notXBoth([x|_], _, _, _, _, _):-
+notXBoth([o|_], _, _, _, _, _):-
   !,  fail.
 notXBoth([_|T], Value, R, List, L, Count):-
   NewCount is Count + 1,
@@ -251,10 +250,10 @@ positionList([H|T], ColNr, [X|L]):-
  value(X, Res),
  positionList(T, ColNr, L).
 
-tilesamount([], 0).
-tilesamount([o|T], NewAmount):-
-  !, tilesamount(T, Amount), NewAmount is Amount + 1.
+tilesamount([], 1).
 tilesamount([x|T], NewAmount):-
+  !, tilesamount(T, Amount), NewAmount is Amount + 1.
+tilesamount([o|T], NewAmount):-
   !, tilesamount(T, Amount), NewAmount is Amount + 1.
 tilesamount([_|T], Amount):-
   tilesamount(T, Amount).
