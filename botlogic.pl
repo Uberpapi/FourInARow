@@ -378,13 +378,13 @@ leastTiles([H|T], [Count, Col], ColNr):-
   NewColNr is ColNr + 1,
   leastTiles(T, [Nr, _], NewColNr),
   tilesamount(H, Count),
-  Count < Nr !,
+  Count < Nr, !,
   value(Col, ColNr).
 leastTiles([_|T], [Count, Col], ColNr):-
   NewColNr is ColNr + 1,
-  leastTiles(T, _, NewColNr).
+  leastTiles(T, [Count, Col], NewColNr).
 
-fullRow(A):-
+availableRow(A):-
   board(Q),
   value(A, Nr),
   getRow(Q, Nr, Row),
