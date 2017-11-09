@@ -1,4 +1,4 @@
-:-module(play, [echo/0, place/3, element/3]).
+:-module(play, [echo/0, initiate/0, place/3, element/3]).
 :-use_module(game).
 :-use_module(rules).
 :-use_module(printboard).
@@ -7,18 +7,21 @@
 player(p1, 'Player 1').
 player(p2, 'Player 2').
 
+initiate:-
+  setplayerturn(p1).
+
 /*Infinite echo where we play */
 echo:-
-  playerturn(Z),
+  playerturn(T),
   write('>> '),
-  ( Z == p1 -> read(X), acceptedCommands(X), call(X), echo
-  ; Z == p1 -> print('That is not a valid command, try again mate.'), nl, echo
+  ( T == p1 -> read(X), acceptedCommands(X), call(X), echo
+  ; T == p1 -> print('That is not a valid command, try again mate.'), nl, echo
   ; maya(Act), call(Act), echo).
 
 /* Creates the board and starts the game */
 start:-
   retractall(board(_)),
-  setplayerturn(p1),
+  %setplayerturn(p1),
   createBoard(6, Q),
   setboard(Q),
   setturns(0),
