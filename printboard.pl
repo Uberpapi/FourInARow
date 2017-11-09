@@ -1,6 +1,5 @@
 :-module(printboard, [print/0]).
 :-use_module(game).
-:-use_module(play).
 :-use_module(rules).
 
 /* Prints our current board */

@@ -1,5 +1,5 @@
-:-module(botlogic, [analyse/2, checkYRow/3, checkXRow/4, evaluateX/3,
-                    maya/1]).
+:-module(botlogic, [analyse/2, checkYRow/3, checkDRow/4, evaluateX/3,
+                    maya/1, sortDDecision/3, analyse/2]).
 :-use_module(game).
 :-use_module(rules).
 
@@ -22,64 +22,75 @@ maya(Act):-
   offOrDef(ActOff, ActDef, [DeforOff, Act]),
   print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl.
 
-offOrDef([ValueOff, ColOff, LengthToRowOff], [ValueDef, ColDef, LengthToRowDef], [offensive, ColOff]):-
+offOrDef([], [], [nothingelsetodo, Act]):-
+  board(Q),
+  leastTiles(Q, [_, Act], 1).
+offOrDef([ValueOff, ColOff, LengthToRowOff], [_, _, _], [offensive, ColOff]):-
   ValueOff == 3,
   LengthToRowOff == 0, !.
 offOrDef([_, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef]):-
-  ValueDef > 1,
+  ValueDef > 2,
   LengthToRowDef == 0, !.
-offOrDef([ValueOff, ColOff, LengthToRowOff], [ValueDef, ColDef, LengthToRowDef],[defensive, ColDef]):-
+offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef],[defensive, ColDef]):-
+  ValueDef > 1,
   ValueOff < ValueDef,
   (LengthToRowDef == 0 ; LengthToRowDef == 2), !.
 offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef]):-
-  ValueDef > 0,
+  ValueDef > 1,
   ValueOff == ValueDef,
   LengthToRowDef == 0, !.
 offOrDef([_, ColOff, _],[_, _, _], [offensive, ColOff]).
 
-whatToDoOffense([], [0, f, 0]).
+
 whatToDoOffense(OffDecisions, Act):-
   whatToDoOffense(OffDecisions, [], Act).
 whatToDoOffense([], Act, Act).
 whatToDoOffense([[Count, Col, LengthToRow]|Rest], [], Act):-
+  availableRow(Col),
   whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
 whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
-  A < Count, !,
+  A < Count,
+  availableRow(Col), !,
   whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
 whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, _, B], Act):-
   Count == A,
-  LengthToRow < B, !,
+  LengthToRow < B,
+  availableRow(Col), !,
   whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
 whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act):-
   A == Count,
   LengthToRow == C,
   weight(B, X), weight(Col, Y),
-  Y < X, !,
+  Y < X,
+  availableRow(Col),!,
   whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoOffense([_|Rest], [A, B, C], Act):-
-  whatToDoOffense(Rest, [A, B, C], Act).
+whatToDoOffense([_|Rest], C, Act):-
+  whatToDoOffense(Rest, C, Act).
 
-whatToDoDefense([], [0, a, 0]).
 whatToDoDefense(DefDecisions, Act):-
   whatToDoDefense(DefDecisions, [], Act).
 whatToDoDefense([], Act, Act).
 whatToDoDefense([[Count, Col, LengthToRow]|Rest], [], Act):-
+  availableRow(Col), !,
   whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
 whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
   Count > A,
+  availableRow(Col), !,
   whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
 whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, _, B], Act):-
   A == Count,
   LengthToRow < B,
+  availableRow(Col), !,
   whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
 whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act):-
   A == Count,
   LengthToRow == C,
   weight(B, X), weight(Col, Y),
   Y < X,
+  availableRow(Col), !,
   whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoDefense([_|Rest], [A, B, C], Act):-
-  whatToDoDefense(Rest, [A, B, C], Act).
+whatToDoDefense([_|Rest], C, Act):-
+  whatToDoDefense(Rest, C, Act).
 
 
 /*Swaps all o to x and vice versa*/
@@ -149,7 +160,7 @@ sortXDecision(Q, [[Value, RowNr, List]|Decisions], [A, B, C], Decision):- %3rd w
   evaluateX(Q, RowNr, List, [Col, LengthToRow]),
   weight(Col, X), weight(B, Y),
   A == Value,
-  LengthToRow == B,
+  LengthToRow == C,
   Y > X, !,
   sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision).
 sortXDecision(Q, [_|Decisions], [A, B, C], Decision):- %Satisfies rest of the cases
@@ -165,7 +176,7 @@ sortDDecision(Q, [[Value, List]|Decisions], [], Decision):- %Saving our first de
 sortDDecision(Q, [[Value, List]|Decisions], [A,_,_], Decision):-
   A < Value, !,
   evaluateD(Q, List, [Col, LengthToRow]),
-  sortXDecision(Q, Decisions, [Value, Col, LengthToRow], Decision). %2nd we prioritize the shortest length we have
+  sortDDecision(Q, Decisions, [Value, Col, LengthToRow], Decision). %2nd we prioritize the shortest length we have
 sortDDecision(Q, [[Value, List]|Decisions], [A, _, B], Decision):-  %left to the row we have the highest Value at
   evaluateD(Q, List, [Col, LengthToRow]),
   A == Value,
@@ -298,13 +309,22 @@ evaluateX(Q, RowNr, [A|B], [], Col):-
   getRow(Q, X, Row),
   tilesamount(Row, L),
   LengthToRow is RowNr - L,
-  evaluateX(Q, RowNr, B, [A,LengthToRow], Col).
+  evaluateX(Q, RowNr, B, [A, LengthToRow], Col).
 evaluateX(Q, RowNr, [A|B], [_,L], Col):-
   value(A, X),
   getRow(Q, X, Row),
   tilesamount(Row, K),
   LengthToRow is RowNr - K,
   LengthToRow < L, !,
+  evaluateX(Q, RowNr, B, [A,LengthToRow], Col).
+evaluateX(Q, RowNr, [A|B], [C,L], Col):-
+  value(A, X),
+  getRow(Q, X, Row),
+  tilesamount(Row, K),
+  LengthToRow is RowNr - K,
+  LengthToRow == L,
+  weight(A, J), weight(C, H),
+  J < H, !,
   evaluateX(Q, RowNr, B, [A,LengthToRow], Col).
 evaluateX(Q, RowNr, [_|B], [C,L], Col):-
   evaluateX(Q, RowNr, B, [C,L], Col).
@@ -326,6 +346,15 @@ evaluateD(Q, [[A,RowNr]|B], [_,L], Col):-
   LengthToRow is RowNr - K,
   LengthToRow < L, !,
   evaluateD(Q, B, [A,LengthToRow], Col).
+evaluateD(Q, [[A,RowNr]|B], [C,L], Col):-
+  value(A, X),
+  getRow(Q, X, Row),
+  tilesamount(Row, K),
+  LengthToRow is RowNr - K,
+  LengthToRow == L,
+  weight(A, J), weight(C, H),
+  J < H, !,
+  evaluateD(Q, B, [A,LengthToRow], Col).
 evaluateD(Q, [_|B], [C,L], Col):-
   evaluateD(Q, B, [C,L], Col).
 
@@ -343,3 +372,21 @@ tilesamount([x|T], NewAmount):-
   !, tilesamount(T, Amount), NewAmount is Amount + 1.
 tilesamount([_|T], Amount):-
   tilesamount(T, Amount).
+
+leastTiles([], [7, _], _).
+leastTiles([H|T], [Count, Col], ColNr):-
+  NewColNr is ColNr + 1,
+  leastTiles(T, [Nr, _], NewColNr),
+  tilesamount(H, Count),
+  Count < Nr !,
+  value(Col, ColNr).
+leastTiles([_|T], [Count, Col], ColNr):-
+  NewColNr is ColNr + 1,
+  leastTiles(T, _, NewColNr).
+
+fullRow(A):-
+  board(Q),
+  value(A, Nr),
+  getRow(Q, Nr, Row),
+  tilesamount(Row, Amount),
+  Amount < 6.
