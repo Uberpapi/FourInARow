@@ -1,5 +1,5 @@
 :-module(botlogic, [analyse/2, checkYRow/3, checkDRow/4, evaluateX/3,
-                    maya/1, sortDDecision/3, analyse/2, whatToDoOffense/3]).
+                    maya/1, sortDDecision/3, analyse/2, whatToDoDefense/3]).
 :-use_module(game).
 :-use_module(rules).
 
@@ -60,7 +60,7 @@ offOrDef([_, ColOff, _],[_, _, _], [X, Y], RoO, RoD, _):-
 whatToDoOffense(OffDecisions, Act, RestOffDecisions):-
   whatToDoOffense(OffDecisions, [], Act, [], RestOffDecisions).
 whatToDoOffense([], Act, Act, R, R).
-whatToDoOffense([[]], Act, Act, R, R).
+whatToDoOffense([[]|_], Act, Act, R, R).
 whatToDoOffense([[Count, Col, LengthToRow]|Rest], [], Act, [], RoO):-
   availableRow(Col), !,
   whatToDoOffense(Rest, [Count, Col, LengthToRow], Act, [], RoO).
@@ -86,7 +86,7 @@ whatToDoOffense([[A, B, C]|Rest], D, Act, R, RoO):-
 whatToDoDefense(DefDecisions, Act, RestDefDecisions):-
   whatToDoDefense(DefDecisions, [], Act, [], RestDefDecisions).
 whatToDoDefense([], Act, Act, R, R).
-whatToDoDefense([[]], Act, Act, R, R).
+whatToDoDefense([[]|_], Act, Act, R, R).
 whatToDoDefense([[Count, Col, LengthToRow]|Rest], [], Act, [], RoD):-
   availableRow(Col), !,
   whatToDoDefense(Rest, [Count, Col, LengthToRow], Act, [], RoD).
