@@ -1,5 +1,5 @@
 :-module(botlogic, [analyse/2, checkYRow/3, checkDRow/4, evaluateX/3,
-                    maya/1, sortDDecision/3, analyse/2]).
+                    maya/1, sortDDecision/3, analyse/2, whatToDoOffense/3]).
 :-use_module(game).
 :-use_module(rules).
 
@@ -17,80 +17,99 @@ maya(Act):-
   oBecomesx(Q, M),
   findall(Decision, analyse(Q, Decision), OffDecisions),print('Offensive decisions is '), print(OffDecisions), nl, %Offensive decisions
   findall(Decision, analyse(M, Decision), DefDecisions),print('Defensive decisions is '), print(DefDecisions), nl, %Defensive decisions
-  whatToDoOffense(OffDecisions, ActOff), print('Offensive decision is '), print(ActOff), nl,
-  whatToDoDefense(DefDecisions, ActDef), print('Defensive decision is '), print(ActDef), nl,
-  offOrDef(ActOff, ActDef, [DeforOff, Act]),
-  print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl.
+  whatToDoOffense(OffDecisions, ActOff, RestOffDecisions), print('Offensive decision is '), print(ActOff), nl,
+  whatToDoDefense(DefDecisions, ActDef, RestDefDecisions), print('Defensive decision is '), print(ActDef), nl,
+  offOrDef(ActOff, ActDef, [DeforOff, Act], RestOffDecisions, RestDefDecisions, []),
+  print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl, print(RestOffDecisions), nl, print(RestDefDecisions), nl.
 
-offOrDef([], [], [nothingelsetodo, Act]):-
+offOrDef([], [], [nothingelsetodo, Act], _, _, _):-
   board(Q),
   leastTiles(Q, [_, Act], 1).
-offOrDef([ValueOff, ColOff, LengthToRowOff], [_, _, _], [offensive, ColOff]):-
+offOrDef([ValueOff, ColOff, LengthToRowOff], [_, _, _], [offensive, ColOff], _, _, _):-
   ValueOff == 3,
   LengthToRowOff == 0, !.
-offOrDef([_, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef]):-
+offOrDef([_, ColOff, _], [ValueDef, ColDef, LengthToRowDef], [X, Y], RoO, RoD, StrictNoNo):-
+  ColOff \== StrictNoNo,
+  ValueDef > 2,
+  ColOff == ColDef,
+  LengthToRowDef == 1, !,
+  whatToDoDefense(RoD, ActDef, RD),
+  whatToDoOffense(RoO, ActOff, RO),
+  offOrDef(ActOff, ActDef, [X, Y], RO, RD, ColOff).
+offOrDef([_, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef], _, _, StrictNoNo):-
+  ColDef \== StrictNoNo,
   ValueDef > 2,
   LengthToRowDef == 0, !.
-offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef],[defensive, ColDef]):-
+offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef],[defensive, ColDef], _, _, StrictNoNo):-
+  ColDef \== StrictNoNo,
   ValueDef > 1,
   ValueOff < ValueDef,
-  (LengthToRowDef == 0 ; LengthToRowDef == 2), !.
-offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef]):-
+  (LengthToRowDef == 0 ; LengthToRowDef == 3), !.
+offOrDef([ValueOff, _, _], [ValueDef, ColDef, LengthToRowDef], [defensive, ColDef], _, _, StrictNoNo):-
+  ColDef \== StrictNoNo,
   ValueDef > 1,
   ValueOff == ValueDef,
   LengthToRowDef == 0, !.
-offOrDef([_, ColOff, _],[_, _, _], [offensive, ColOff]).
+offOrDef([_, ColOff, _],[_, _, _], [offensive, ColOff], _, _, StrictNoNo):-
+  ColOff \== StrictNoNo.
+offOrDef([_, ColOff, _],[_, _, _], [X, Y], RoO, RoD, _):-
+  whatToDoDefense(RoD, ActDef, RD),
+  whatToDoOffense(RoO, ActOff, RO),
+  offOrDef(ActOff, ActDef, [X, Y], RO, RD, ColOff).
 
-
-whatToDoOffense(OffDecisions, Act):-
-  whatToDoOffense(OffDecisions, [], Act).
-whatToDoOffense([], Act, Act).
-whatToDoOffense([[Count, Col, LengthToRow]|Rest], [], Act):-
-  availableRow(Col),
-  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+whatToDoOffense(OffDecisions, Act, RestOffDecisions):-
+  whatToDoOffense(OffDecisions, [], Act, [], RestOffDecisions).
+whatToDoOffense([], Act, Act, R, R).
+whatToDoOffense([[]], Act, Act, R, R).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [], Act, [], RoO):-
+  availableRow(Col), !,
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act, [], RoO).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act, RestOffDecisions, RoO):-
   A < Count,
   availableRow(Col), !,
-  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, _, B], Act):-
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act, [[A, B, C]|RestOffDecisions], RoO).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act, RestOffDecisions, RoO):-
   Count == A,
-  LengthToRow < B,
+  LengthToRow < C,
   availableRow(Col), !,
-  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act):-
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act, [[A, B, C]|RestOffDecisions], RoO).
+whatToDoOffense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act, RestOffDecisions, RoO):-
   A == Count,
   LengthToRow == C,
   weight(B, X), weight(Col, Y),
   Y < X,
-  availableRow(Col),!,
-  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoOffense([_|Rest], C, Act):-
-  whatToDoOffense(Rest, C, Act).
+  availableRow(Col), !,
+  whatToDoOffense(Rest, [Count, Col, LengthToRow], Act, [[A, B, C]|RestOffDecisions], RoO).
+whatToDoOffense([[A, B, C]|Rest], D, Act, R, RoO):-
+  whatToDoOffense(Rest, D, Act, [[A, B, C]|R], RoO).
 
-whatToDoDefense(DefDecisions, Act):-
-  whatToDoDefense(DefDecisions, [], Act).
-whatToDoDefense([], Act, Act).
-whatToDoDefense([[Count, Col, LengthToRow]|Rest], [], Act):-
+whatToDoDefense(DefDecisions, Act, RestDefDecisions):-
+  whatToDoDefense(DefDecisions, [], Act, [], RestDefDecisions).
+whatToDoDefense([], Act, Act, R, R).
+whatToDoDefense([[]], Act, Act, R, R).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [], Act, [], RoD):-
   availableRow(Col), !,
-  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, _, _], Act):-
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act, [], RoD).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act, RestDefDecisions, RoD):-
   Count > A,
-  availableRow(Col), !,
-  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, _, B], Act):-
+  availableRow(Col),
+  !,
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act, [[A, B, C]|RestDefDecisions], RoD).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act, RestDefDecisions, RoD):-
   A == Count,
-  LengthToRow < B,
-  availableRow(Col), !,
-  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act):-
+  LengthToRow < C,
+  availableRow(Col),
+  !,
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act, [[A, B, C]|RestDefDecisions], RoD).
+whatToDoDefense([[Count, Col, LengthToRow]|Rest], [A, B, C], Act, RestDefDecisions, RoD):-
   A == Count,
   LengthToRow == C,
   weight(B, X), weight(Col, Y),
   Y < X,
   availableRow(Col), !,
-  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act).
-whatToDoDefense([_|Rest], C, Act):-
-  whatToDoDefense(Rest, C, Act).
+  whatToDoDefense(Rest, [Count, Col, LengthToRow], Act, [[A, B, C]|RestDefDecisions], RoD).
+whatToDoDefense([[A, B, C]|Rest], D, Act, R, RoD):-
+  whatToDoDefense(Rest, D, Act, [[A, B, C]|R], RoD).
 
 
 /*Swaps all o to x and vice versa*/
@@ -389,4 +408,4 @@ availableRow(A):-
   value(A, Nr),
   getRow(Q, Nr, Row),
   tilesamount(Row, Amount),
-  Amount < 6.
+  Amount < 7.

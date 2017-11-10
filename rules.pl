@@ -87,11 +87,9 @@ listLength([_|Rest], NewLength):-
 
 /*Places a tile on the first avalible spot
   on column Nr and returns the new Matrix */
-place(Q, Nr, Y):-
-  place(Q, Nr, Nr, Y).
 
-place([], _, _, []).
-place([Row|T], 1, _, [NewRow|Y]):-
+place([], _, []).
+place([Row|T], 1, [NewRow|Y]):-
   playerturn(X),
   reverseList(Row, RevRow),
   element(RevRow, RevNewRow, X, Swap),
@@ -101,10 +99,10 @@ place([Row|T], 1, _, [NewRow|Y]):-
     ; Swap == yes, X == p2 -> setplayerturn(p1), setturns(P)
     ; setplayerturn(X)),
   reverseList(RevNewRow, NewRow),
-  place(T, 0, _, Y).
-place([H|T], Nr, ColNr, [H|Y]):-
+  place(T, 0, Y).
+place([H|T], Nr, [H|Y]):-
   NewNr is Nr - 1,
-  place(T, NewNr, ColNr, Y).
+  place(T, NewNr, Y).
 
 /*Checks if a column has an avalible spot
   for a tile and if so places one.       */
