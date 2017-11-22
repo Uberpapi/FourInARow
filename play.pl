@@ -3,6 +3,7 @@
 :-use_module(rules).
 :-use_module(printboard).
 :-use_module(botlogic).
+:-use_module(gamelog).
 
 player(p1, 'Player 1').
 player(p2, 'Player 2').
@@ -14,9 +15,9 @@ initiate:-
 echo:-
   playerturn(T),
   write('>> '),
-  ( T == p1 -> read(X), acceptedCommands(X), call(X), echo
+  ( T == p1 -> read(X), acceptedCommands(X), writeToLog(' Player'), writeToLog(X), call(X), echo
   ; T == p1 -> print('That is not a valid command, try again mate.'), nl, echo
-  ; maya(Act), call(Act), echo).
+  ; maya(Act), writeToLog(' Maya'), writeToLog(Act), call(Act), echo).
 
 /* Creates the board and starts the game */
 start:-
@@ -57,8 +58,8 @@ a:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 b:-
@@ -70,8 +71,8 @@ b:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 
@@ -84,8 +85,8 @@ c:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 d:-
@@ -97,8 +98,8 @@ d:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 e:-
@@ -110,8 +111,8 @@ e:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 f:-
@@ -123,8 +124,8 @@ f:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 g:-
@@ -136,8 +137,8 @@ g:-
   turns(Z),
   print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
+  ; row(M), X == p1 -> refresh, writeToLog('Maya Wins'), writeToLog(nl), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, writeToLog('Player Wins'), writeToLog(nl), print('We have a Winner and that is Player 1!!!'),  nl
   ;print(Turn), print(' next!'), nl).
 
 /*All the accepted commands
