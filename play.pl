@@ -3,20 +3,23 @@
 :-use_module(rules).
 :-use_module(printboard).
 :-use_module(botlogic).
+:-use_module(randombot).
 
 player(p1, 'Player 1').
 player(p2, 'Player 2').
 
 initiate:-
-  setplayerturn(p1).
+  setplayerturn(p1),
+  setwins([0,0]),
+  start.
 
 /*Infinite echo where we play */
 echo:-
   playerturn(T),
-  write('>> '),
-  ( T == p1 -> read(X), acceptedCommands(X), call(X), echo
+  %write('>> '),
+  ( T == p1 -> randomact(Actrandom), acceptedCommands(Actrandom), acttime(Actrandom), echo
   ; T == p1 -> print('That is not a valid command, try again mate.'), nl, echo
-  ; maya(Act), call(Act), echo).
+  ; maya(Act), acttime(Act), echo).
 
 /* Creates the board and starts the game */
 start:-
@@ -36,109 +39,23 @@ refresh:-
   retractall(board(_)),
   createBoard(6, Q),
   setboard(Q),
-  setturns(0).
+  setturns(0),
+  wins([W1,W2]), print('Player has: '), print(W1), nl, print('Maya has: '), print(W2), nl.
 
-/*Initiates rematch*/
-rematch:-
-  refresh,
-  print,
-  playerturn(X),
-  player(X, Turn),
-  print(Turn),
-  print(' begins this time! Column D might be a good spot to start...'), nl.
-
-/* All the commands avalible for placing tiles */
-a:-
+acttime(Act):-
+  value(Act, Col),
   board(Q),
-  place(Q, 1, M),
+  place(Q, Col, M),
   playerturn(X),
   setboard(M),
   player(X, Turn),
   turns(Z),
-  print,
+  wins([W1,W2]),
+  %print,
   ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
-
-b:-
-  board(Q),
-  place(Q, 2, M),
-  playerturn(X),
-  setboard(M),
-  player(X, Turn),
-  turns(Z),
-  print,
-  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
-
-
-c:-
-  board(Q),
-  place(Q, 3, M),
-  playerturn(X),
-  setboard(M),
-  player(X, Turn),
-  turns(Z),
-  print,
-  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
-
-d:-
-  board(Q),
-  place(Q, 4, M),
-  playerturn(X),
-  setboard(M),
-  player(X, Turn),
-  turns(Z),
-  print,
-  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
-
-e:-
-  board(Q),
-  place(Q, 5, M),
-  playerturn(X),
-  setboard(M),
-  player(X, Turn),
-  turns(Z),
-  print,
-  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
-
-f:-
-  board(Q),
-  place(Q, 6, M),
-  playerturn(X),
-  setboard(M),
-  player(X, Turn),
-  turns(Z),
-  print,
-  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
-
-g:-
-  board(Q),
-  place(Q, 7, M),
-  playerturn(X),
-  setboard(M),
-  player(X, Turn),
-  turns(Z),
-  print,
-  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> refresh, print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> refresh, print('We have a Winner and that is Player 1!!!'),  nl
-  ;print(Turn), print(' next!'), nl).
+  ; row(M), X == p1 -> refresh, W4 is W2 + 1, setwins([W1,W4]), print('We have a Winner and that is Maya the bot!!!'), nl
+  ; row(M), X == p2 -> refresh, W3 is W1 + 1, setwins([W3,W2]), print('We have a Winner and that is Player 1!!!'),  nl
+  ;nl). %print(Turn), print(' next!'), nl).
 
 /*All the accepted commands
   we can handle as inputs  */
@@ -155,3 +72,12 @@ acceptedCommands(X):-
   ; X == end_of_file  -> true
   ; X == maya -> true
   ; fail).
+
+/*Initiates rematch*/
+rematch:-
+  refresh,
+  %print,
+  playerturn(X),
+  player(X, Turn),
+  print(Turn),
+  print(' begins this time! Column D might be a good spot to start...'), nl.

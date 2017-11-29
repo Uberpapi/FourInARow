@@ -2,7 +2,6 @@
                  place/3, element/4, dRow/1, yRow/1, tMatrix/2]).
 :-use_module(game).
 
-
 row(M):-
   tMatrix(M, R),
   (yRow(M) ; yRow(R); dRow(M)).

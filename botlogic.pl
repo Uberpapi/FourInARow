@@ -1,5 +1,7 @@
 :-module(botlogic, [analyse/2, checkYRow/3, checkDRow/4, evaluateX/3,
-                    maya/1, sortDDecision/3, analyse/2, offOrDef/6, whatToDoOffense/3, whatToDoDefense/3, availableRow/1]).
+                    maya/1, sortDDecision/3, analyse/2, offOrDef/6,
+                    whatToDoOffense/3, whatToDoDefense/3, availableRow/1,
+                    value/2]).
 :-use_module(game).
 :-use_module(rules).
 
@@ -15,12 +17,12 @@ weight(a, 4). weight(g, 4). % Because edges are worst
 maya(Act):-
   board(Q),
   oBecomesx(Q, M),
-  findall(Decision, analyse(Q, Decision), OffDecisions),print('Offensive decisions is '), print(OffDecisions), nl, %Offensive decisions
-  findall(Decision, analyse(M, Decision), DefDecisions),print('Defensive decisions is '), print(DefDecisions), nl, %Defensive decisions
-  whatToDoOffense(OffDecisions, ActOff, RestOffDecisions), print('Offensive decision is '), print(ActOff), nl,
-  whatToDoDefense(DefDecisions, ActDef, RestDefDecisions), print('Defensive decision is '), print(ActDef), nl,
-  offOrDef(ActOff, ActDef, [DeforOff, Act], RestOffDecisions, RestDefDecisions, []),
-  print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl, print(RestOffDecisions), nl, print(RestDefDecisions), nl.
+  findall(Decision, analyse(Q, Decision), OffDecisions), %print('Offensive decisions is '), print(OffDecisions), nl, %Offensive decisions
+  findall(Decision, analyse(M, Decision), DefDecisions), %print('Defensive decisions is '), print(DefDecisions), nl, %Defensive decisions
+  whatToDoOffense(OffDecisions, ActOff, RestOffDecisions), %print('Offensive decision is '), print(ActOff), nl,
+  whatToDoDefense(DefDecisions, ActDef, RestDefDecisions), %print('Defensive decision is '), print(ActDef), nl,
+  offOrDef(ActOff, ActDef, [DeforOff, Act], RestOffDecisions, RestDefDecisions, []).
+  % print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl, print(RestOffDecisions), nl, print(RestDefDecisions), nl.
 
 offOrDef([], [_, ColDef, LengthToRowDef], [onlyDefToDo, ColDef], _, _, _):-
   LengthToRowDef \== 1, !.
