@@ -106,8 +106,8 @@ place([H|T], Nr, [H|Y]):-
 /*Checks if a column has an avalible spot
   for a tile and if so places one.       */
 element([], [], done, yes):- !.
-element([], [], _, no):-
-  print('This column is alredy full, please select another one or forfeit to your obviously superior opponent.'), nl.
+element([], [], _, no).
+  %print('This column is alredy full, please select another one or forfeit to your obviously superior opponent.'), nl.
 element([H|T], [H|Y], done, Swap):-
    element(T, Y, done, Swap).
 element([o|T], [o|Y], Turn, Swap):-

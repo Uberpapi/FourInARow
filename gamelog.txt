@@ -1,4 +1,0 @@
-Player, d,  Maya, d,  Player, e,  Maya, c,  Player, e,  Maya, e,  Player, d,  Maya, f,  Player, d,  Maya, f,  Player, c,  Maya, f,  Player, f,  Maya, d,  Player, e,  Maya, b,  Player, f, Player Wins, 
-Player, d,  Maya, d,  Player, e,  Maya, c,  Player, e,  Maya, e,  Player, d,  Maya, f,  Player, d,  Maya, f,  Player, c,  Maya, f,  Player, f,  Maya, d,  Player, e,  Maya, b,  Player, f, Player Wins, 
-Maya, d,  Player, a,  Maya, d,  Player, a,  Maya, a,  Player, d,  Maya, c,  Player, c,  Maya, b,  Player, e,  Maya, e,  Player, c,  Maya, d,  Player, e,  Maya, f,  Player, f,  Maya, f,  Player, e,  Maya, g,  Player, g,  Maya, g,  Player, g,  Maya, c,  Player, a,  Maya, d,  Player, g,  Maya, e,  Player, e,  Maya, d,  Player, a,  Maya, f, Maya Wins, 
-Player, f,  Maya, d,  Player, d,  Maya, c,  Player, e,  Maya, b,  Player, a,  Maya, d,  Player, c,  Maya, e,  Player, c,  Maya, c,  Player, b,  Maya, d,  Player, a, Player Wins, 
