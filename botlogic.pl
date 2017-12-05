@@ -14,7 +14,7 @@ weight(c, 2). weight(e, 2).
 weight(f, 3). weight(b, 3).
 weight(a, 4). weight(g, 4). % Because edges are worst
 
-%Gruber starts
+%Gruber starts as X
 gruber(Act):-
   board(Q),
   oBecomesx(Q, M),
@@ -25,7 +25,7 @@ gruber(Act):-
   offOrDef(ActOff, ActDef, [DeforOff, Act], RestOffDecisions, RestDefDecisions, []).
   % print(' bot puts in '), print(DeforOff), print(' '), print(Act), nl, print(RestOffDecisions), nl, print(RestDefDecisions), nl.
 
-%Maya goes second
+%Maya goes second as O
 maya(Act):-
   board(Q),
   oBecomesx(Q, M),

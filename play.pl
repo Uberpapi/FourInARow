@@ -20,9 +20,9 @@ echo:-
   playerturn(T),
   save(Q),
   %write('>> '),
-  ( T == p1 -> randomact(Actrandom), setsave([Actrandom|Q]), acceptedCommands(Actrandom), acttime(Actrandom), echo
-  ; T == p1 -> print('That is not a valid command, try again mate.'), nl, echo
-  ; maya(Act), setsave([Act|Q]), acttime(Act), echo).
+  ( T == p1 -> randomact(Actrandom), setsave([Actrandom|Q]), acceptedCommands(Actrandom), acttime(Actrandom)
+  ; T == p1 -> print('That is not a valid command, try again mate.'), nl
+  ; maya(Act), setsave([Act|Q]), acttime(Act)), !, echo.
 
 /* Creates the board and starts the game */
 start:-
