@@ -7,14 +7,26 @@ from sklearn.neural_network import MLPClassifier
 
 def convertToBoard(dataset):
 
-    X = []
+    x = []
     y = []
     gameStates = dataset[0]
     target = dataset[1]
-
-    moves.pop(0)
-    for y in target:
-        asd =1+2
+    count = 0
+    for i in target:
+        if i == "a":
+            y. append([1,0,0,0,0,0,0])
+        elif i == "b":
+            y. append([0,1,0,0,0,0,0])
+        elif i == "c":
+            y. append([0,0,1,0,0,0,0])
+        elif i == "d":
+            y. append([0,0,0,1,0,0,0])
+        elif i == "e":
+            y. append([0,0,0,0,1,0,0])
+        elif i == "f":
+            y. append([0,0,0,0,0,1,0])
+        elif i == "g":
+            y. append([0,0,0,0,0,0,1])
 
     for moves in gameStates:
         boardstate = [0]*42
@@ -23,54 +35,105 @@ def convertToBoard(dataset):
         for move in moves:
             if(move == "a" and playerturn):
                 boardstate[aCount] = 1
+                aCount += 1
+                playerturn = not playerturn
             elif(move == "b" and playerturn):
-                boardstate[bCount] = 1
+                boardstate[6 + bCount] = 1
+                bCount += 1
+                playerturn = not playerturn
             elif(move == "c" and playerturn):
-                boardstate[cCount] = 1
+                boardstate[12 + cCount] = 1
+                cCount += 1
+                playerturn = not playerturn
             elif(move == "d" and playerturn):
-                boardstate[dCount] = 1
+                boardstate[18 + dCount] = 1
+                dCount += 1
+                playerturn = not playerturn
             elif(move == "e" and playerturn):
-                boardstate[eCount] = 1
+                boardstate[24 + eCount] = 1
+                eCount += 1
+                playerturn = not playerturn
             elif(move == "f" and playerturn):
-                boardstate[fCount] = 1
+                boardstate[30 + fCount] = 1
+                fCount += 1
+                playerturn = not playerturn
             elif(move == "g" and playerturn):
-                boardstate[gCount] = 1
-            if(move == "a" and playerturn != true):
+                boardstate[36 + gCount] = 1
+                gCount += 1
+                playerturn = not playerturn
+            elif(move == "a" and playerturn != True):
                 boardstate[aCount] = -1
-            elif(move == "b" and playerturn != true):
-                boardstate[bCount] = -1
-            elif(move == "c" and playerturn != true):
-                boardstate[cCount] = -1
-            elif(move == "d" and playerturn != true):
-                boardstate[dCount] = -1
-            elif(move == "e" and playerturn != true):
-                boardstate[eCount] = -1
-            elif(move == "f" and playerturn != true):
-                boardstate[fCount] = -1
-            elif(move == "g" and playerturn != true):
-                boardstate[gCount] = -1
-
-    return [X,y]
+                aCount += 1
+                playerturn = not playerturn
+            elif(move == "b" and playerturn != True):
+                boardstate[6 + bCount] = -1
+                bCount += 1
+                playerturn = not playerturn
+            elif(move == "c" and playerturn != True):
+                boardstate[12 + cCount] = -1
+                cCount += 1
+                playerturn = not playerturn
+            elif(move == "d" and playerturn != True):
+                boardstate[18 + dCount] = -1
+                dCount += 1
+                playerturn = not playerturn
+            elif(move == "e" and playerturn != True):
+                boardstate[24 + eCount] = -1
+                eCount += 1
+                playerturn = not playerturn
+            elif(move == "f" and playerturn != True):
+                boardstate[30 + fCount] = -1
+                fCount += 1
+                playerturn = not playerturn
+            elif(move == "g" and playerturn != True):
+                boardstate[36 + gCount] = -1
+                gCount += 1
+                playerturn = not playerturn
+        x.append(boardstate)
+    return [x,y]
 
 
 def partition(inputfile):
+    goal = []
+    boardstate = []
+    lines=open(inputfile, 'r').readlines()
+    lines_set = set(lines)
+    print(len(lines_set))
+    for line in lines_set:
+        gamegoal = []
+        gameboardstate = []
+        x = ast.literal_eval(line)
+        x.pop()
+        count = 0
+        while(len(x)-1 > 1):
+            gamegoal.append(x.pop())
+            gameboardstate.append(x[:])
+            x.pop()
+        goal.append(gamegoal)
+        boardstate.append(gameboardstate)
+        dataset = []
+    for i in range(len(boardstate)):
+        result = convertToBoard([boardstate[i],goal[i]])
+        dataset.append(result)
 
-        goal = []
-        boardstate = []
-        lines=open(inputfile, 'r').readlines()
-        lines_set = set(lines)
-        for line in lines_set:
-            x = ast.literal_eval(line)
-            while(len(x)-1 > 1):
-                goal.append(x.pop())
-                boardstate.append(x[:])
-                x.pop()
+#    for board in boardstate:
+#        count = 0
+#        for i in board:
+#            print(i)
+#            print(dataset[0][0][count])
+#            count += 1
+    #print(len(dataset))
+    print(arraylength(dataset))
+    return dataset
 
-        #convertToBoard(dataset)
-        dataset = [boardstate, goal]
-        print(dataset)
-        return dataset
-
+def arraylength(array):
+    count = 0
+    for o in range(len(array)):
+        for i in range(len(array[o])):
+            for y in range(len(array[o][i])):
+                for x in range(len(array[o][i][y])):
+                    count += 1
+    return count
 def trainNeural(dataset):
     clf = MLPClassifier(activation='logistic',solver='sgd', hidden_layer_sizes=(10, 15), random_state=1)
     clf.fit(dataset[0], dataset[1])

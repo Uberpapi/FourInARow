@@ -14,7 +14,7 @@ writeToLog(X):-
   close(Stream).
 
 sortLog:-
-  open('logicuniqueresult.txt', read, Stream),
+  open('logicunique.txt', read, Stream),
   indexLog(Stream, Res, 1),
   close(Stream).
 
@@ -23,7 +23,6 @@ indexLog(Stream, [[Count, L]|Res], Count):-
   NewCount is Count + 1,
   \+at_end_of_stream(Stream),
   read(Stream, X),
-  %print(Count),
   indexLog(Stream, Res, NewCount),
   listLength(X, L).
 indexLog(Stream, [], Count):-
