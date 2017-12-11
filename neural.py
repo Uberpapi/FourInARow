@@ -2,28 +2,30 @@ import optparse
 import numpy
 import time
 import ast
-from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
-
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.externals import joblib
 def convertToBoard(dataset):
 
     gameStates = dataset[0]
     target = dataset[1]
     count = 0
     if target == "a":
-        y = [1,0,0,0,0,0,0]
+        y = 1
     elif target == "b":
-        y = [0,1,0,0,0,0,0]
+        y = 2
     elif target == "c":
-        y = [0,0,1,0,0,0,0]
+        y = 3
     elif target == "d":
-        y = [0,0,0,1,0,0,0]
+        y = 4
     elif target == "e":
-        y = [0,0,0,0,1,0,0]
+        y = 5
     elif target == "f":
-        y = [0,0,0,0,0,1,0]
+        y = 6
     elif target == "g":
-        y = [0,0,0,0,0,0,1]
+        y = 7
 
     playerturn = ("p1" == gameStates.pop(0))
     boardstate = [0]*42
@@ -117,18 +119,31 @@ def partition(inputfile):
 
 def arraylength(array):
     count = 0
-    for o in range(len(array)):
+    for o in range(1):
         for i in range(len(array[o])):
             for y in range(len(array[o][i])):
                 count += 1
-    return count
+    return count + len(array[1])
+
 def trainNeural(dataset):
+    X = dataset[0]
+    y = dataset[1]
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    X_train = scaler.transform(X_train)
+    X_test = scaler.transform(X_test)
 
-    clf = MLPClassifier(activation='logistic',solver='sgd', hidden_layer_sizes=(10, 15), random_state=1)
-    clf.fit(dataset[0], dataset[1])
-    clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],[0, 0, 0, 1, 0, 0, 0]])
+    mlp = MLPClassifier(hidden_layer_sizes=(15,15))
+    mlp.fit(X_train,y_train)
+    predictions = mlp.predict(X_test)
 
-    return clf
+    print(predictions)
+    print(confusion_matrix(y_test,predictions))
+    print(classification_report(y_test,predictions))
+    joblib.dump(mlp, 'memory.pkl')
+
+    return mlp
 def main():
         parser = optparse.OptionParser('usage %prog ' +\
                        '-i <inputfile>')
@@ -143,7 +158,7 @@ def main():
         else:
                 start_time = time.time()
                 lineArray = partition(inputfile)
-                #datasetboard = train_test_split(lineArray[0], test_size=0.3)
+                #dataset_test = train_test_split(lineArray[0], lineArray[1])
                 #datasetgoals = train_test_split(lineArray[1], test_size=0.3)
                 trainNeural(lineArray)
                 print(time.time() - start_time , " sec")
