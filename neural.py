@@ -95,7 +95,7 @@ def partition(inputfile):
     boardstate = []
     lines=open(inputfile, 'r').readlines()
     lines_set = set(lines)
-    print(len(lines_set))
+    print(len(lines_set), 'is the number of games')
     for line in lines_set:
         x = ast.literal_eval(line)
         x.pop()
@@ -114,7 +114,7 @@ def partition(inputfile):
     #for i in range(len(parsedboardstate)):
     #        print(parsedboardstate[i])
     #        print(parsedgoal[i])
-    print(arraylength(dataset))
+    print(arraylength(dataset), 'is the number of elements after partition')
     return dataset
 
 def arraylength(array):
@@ -129,19 +129,20 @@ def trainNeural(dataset):
     X = dataset[0]
     y = dataset[1]
     X_train, X_test, y_train, y_test = train_test_split(X, y)
+    print(100 - (len(X_test)/len(dataset[0]))*100, '% of the games is being used as our train size and the rest is used for testing')
     scaler = StandardScaler()
     scaler.fit(X_train)
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
-    mlp = MLPClassifier(hidden_layer_sizes=(35,35))
+    mlp = MLPClassifier(hidden_layer_sizes=(100, 100))
     mlp.fit(X_train,y_train)
     predictions = mlp.predict(X_test)
 
     print(predictions)
     print(confusion_matrix(y_test,predictions))
     print(classification_report(y_test,predictions))
-    joblib.dump(mlp, 'memory.pkl')
+    joblib.dump(mlp, 'memoryalex.pkl')
 
     return mlp
 def main():
