@@ -1,15 +1,28 @@
+:-module(tcptest, [initiateStream/0, check/2, readStream/1, send/0,
+                   sendStream/1]).
 :-use_module(library(sockets)).
+:-use_module(game).
 
-initiate:-
+initiateStream:-
   %The socket Socket is connected to the address. Stream
   %is a special stream on which items can be both read and written.
   socket_client_open('':4000, Stream, [type(text)]),
-  readStream(Stream).
-readStream(Stream):-
-  read_line(Stream, X),
-  print(X),nl,print(a),
-  check(Stream, X),
-  readStream(Stream).
+  setstream(Stream).
+
+readStream(X):-
+  stream(Stream),
+  read_line(Stream, X), !,
+  print(X), nl.
+readStream(X):-
+  print('Yadoodles'),
+  readStream(X).
+
+sendStream(Q):-
+  stream(Stream),
+  write(Stream, Q),
+  flush_output(Stream).
+
+
 
 
 
@@ -24,14 +37,9 @@ check(Stream, [A1,32,A2,32,A3,32,A4,32,A5,32,A6,32,A7,32,
   format(Stream, '~d', [3]),
   flush_output(Stream), nl,
   print('We sent move'), nl, !.
-  
+
 check(Stream, _).
 
 check(_, [71,97,109,101,79,118,101,114]):-
   nl,
   print('Game is over').
-
-send:-
-  format(Stream, '~d', [3]), nl,
-  print('We try again to send'), nl,
-  readStream.

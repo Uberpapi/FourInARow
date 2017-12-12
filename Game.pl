@@ -1,6 +1,6 @@
 :-module(game, [createBoard/2, board/1, playerturn/1, setboard/1,
                 setplayerturn/1, reverseList/2, setturns/1, turns/1,
-                wins/1, setwins/1, save/1, setsave/1]).
+                wins/1, setwins/1, save/1, setsave/1, setstream/1, stream/1]).
 
 /*We use dynamics to store variables */
 :- dynamic board/1.
@@ -8,6 +8,7 @@
 :- dynamic turns/1.
 :- dynamic wins/1.
 :- dynamic save/1.
+:- dynamic stream/1.
 
 /*Creates a a game Board with the
   size N x N+1           */
@@ -70,3 +71,8 @@ setsave(_):-
   fail.
 setsave(X):-
   assert(save(X)).
+setstream(_):-
+  retract(stream(_)),
+  fail.
+setstream(X):-
+  assert(stream(X)).

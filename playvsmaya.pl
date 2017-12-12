@@ -1,15 +1,21 @@
-:-module(play, [echo/0, initiate/0, place/3, element/3]).
+:-module(playvsmaya, [echo/0, initiate/0, place/3, element/3]).
 :-use_module(game).
 :-use_module(rules).
 :-use_module(printboard).
 :-use_module(botlogic).
 :-use_module(randombot).
 :-use_module(gamelog).
+:-use_module(tcptest).
 
 player(p1, 'Player 1').
 player(p2, 'Player 2').
 
 initiate:-
+  initiateStream,
+  board(Q),
+  parse(Q, Res),
+  print(Res),
+  sendStream(Res),
   setplayerturn(p1),
   setwins([0,0]),
   setsave([p1]),
@@ -20,7 +26,7 @@ echo:-
   playerturn(T),
   save(Q),
   write('>> '),
-  ( T == p1 -> read(X), acceptedCommands(X), acttime(X)
+  ( T == p1 -> readStream(Move), print(Move), acceptedCommands(Move), acttime(Move)
   ; T == p1 -> print('That is not a valid command, try again mate.'), nl
   ; maya(Act), setsave([Act|Q]), acttime(Act)), !, echo.
 
@@ -64,7 +70,7 @@ acttime(Act):-
     W4 is W2 + 1, setwins([W1,W4]) % print('We have a Winner and that is Maya the bot!!!'), nl
   ; row(M), X == p2 -> save(Stats), refresh,
   W3 is W1 + 1, setwins([W3,W2]) %print('We have a Winner and that is Player 1!!!'),  nl
-  ; print(Turn), print(' next!'), nl, board(U), parse(U, Res), print(Res), nl).
+  ; print(Turn), print(' next!'), nl, board(U), parse(U, Res), writeStream(Res), nl).
 
 /*All the accepted commands
   we can handle as inputs  */
@@ -78,7 +84,7 @@ acceptedCommands(X):-
   ; X == g -> true
   ; X == rematch -> true
   ; X == start -> true
-  ; X == end_of_file  -> true
+  %; X == end_of_file  -> true
   ; X == maya -> true
   ; fail).
 
@@ -91,12 +97,14 @@ rematch:-
   print(Turn),
   print(' begins this time! Column D might be a good spot to start...'), nl.
 
-parse([[]], []):- !.
-parse([[]|Rest], Res):-
-  !, parse(Rest, Res).
-parse([[o|T]|Rest], [-1|Res]):-
-  parse([T|Rest], Res).
-parse([[x|T]|Rest], [1|Res]):-
-  parse([T|Rest], Res).
-parse([[_|T]|Rest], [0|Res]):-
-  parse([T|Rest], Res).
+parse(Q, Res):-
+  parse(Q, Res, []).
+parse([[]], Res, Res):- !.
+parse([[]|Rest], Y, Res):-
+  !, parse(Rest, Y, Res).
+parse([[o|T]|Rest], Y, Res):-
+  parse([T|Rest], Y, [-1|Res]).
+parse([[x|T]|Rest], Y, Res):-
+  parse([T|Rest], Y, [1|Res]).
+parse([[_|T]|Rest], Y, Res):-
+  parse([T|Rest], Y, [0|Res]).

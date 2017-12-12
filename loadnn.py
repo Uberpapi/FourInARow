@@ -2,28 +2,35 @@ import optparse
 import numpy as np
 import time
 import ast
+import socket
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report,confusion_matrix
 from sklearn.externals import joblib
 
+def streamtime():
+    clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    clientsocket.connect(('localhost', 4000))
+    return clientsocket
+
 
 def receive(mlp):
-    X = input("Enter boardstate: ")
+    stream = streamtime()
+    print('We have now started ARNOLD')
+    X = stream.recv(1024)
+    print(X)
     scaler = StandardScaler()
-    while(X != "exit"):
+    while(True):
+        print(X)
         #X = ast.literal_eval(X)
         X = np.asmatrix(X)
-        print(X)
-        #X = np.arange(42).reshape(1,-1)
-        print('after arange', X)
-        #scaler.fit(X)
-        #X = scaler.transform(X)
         #print('after fit', X)
-        print(mlp.predict(X))
-        X = input("Enter boardstate: ")
-    print("exiting")
+        Send = mlp.predict(X)
+        stream.send(b(Send))
+        X = stream.recv(1024)
+        if not X:
+            break
 
 def main():
         parser = optparse.OptionParser('usage %prog ' +\
