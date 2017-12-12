@@ -1,5 +1,5 @@
 import optparse
-import numpy
+import numpy as np
 import time
 import ast
 from sklearn.neural_network import MLPClassifier
@@ -11,7 +11,16 @@ from sklearn.externals import joblib
 
 def receive(mlp):
     X = input("Enter boardstate: ")
+    scaler = StandardScaler()
     while(X != "exit"):
+        #X = ast.literal_eval(X)
+        X = np.asmatrix(X)
+        print(X)
+        #X = np.arange(42).reshape(1,-1)
+        print('after arange', X)
+        #scaler.fit(X)
+        #X = scaler.transform(X)
+        #print('after fit', X)
         print(mlp.predict(X))
         X = input("Enter boardstate: ")
     print("exiting")
