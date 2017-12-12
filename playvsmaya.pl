@@ -64,7 +64,7 @@ acttime(Act):-
     W4 is W2 + 1, setwins([W1,W4]) % print('We have a Winner and that is Maya the bot!!!'), nl
   ; row(M), X == p2 -> save(Stats), refresh,
   W3 is W1 + 1, setwins([W3,W2]) %print('We have a Winner and that is Player 1!!!'),  nl
-  ; print(Turn), print(' next!'), nl, print(Q)).
+  ; print(Turn), print(' next!'), nl, board(U), parse(U, Res), print(Res), nl).
 
 /*All the accepted commands
   we can handle as inputs  */
@@ -91,5 +91,12 @@ rematch:-
   print(Turn),
   print(' begins this time! Column D might be a good spot to start...'), nl.
 
-  %parse([[H|T]|Rest], Res):-
-  %  H
+parse([[]], []):- !.
+parse([[]|Rest], Res):-
+  !, parse(Rest, Res).
+parse([[o|T]|Rest], [-1|Res]):-
+  parse([T|Rest], Res).
+parse([[x|T]|Rest], [1|Res]):-
+  parse([T|Rest], Res).
+parse([[_|T]|Rest], [0|Res]):-
+  parse([T|Rest], Res).
