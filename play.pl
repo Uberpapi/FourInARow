@@ -19,8 +19,8 @@ initiate:-
 echo:-
   playerturn(T),
   save(Q),
-  %write('>> '),
-  ( T == p1 -> randomact(Actrandom), setsave([Actrandom|Q]), acceptedCommands(Actrandom), acttime(Actrandom)
+  write('>> '),
+  ( T == p1 -> read(X), acceptedCommands(X), acttime(X)
   ; T == p1 -> print('That is not a valid command, try again mate.'), nl
   ; maya(Act), setsave([Act|Q]), acttime(Act)), !, echo.
 
@@ -35,11 +35,11 @@ start:-
   print('             Welcome to our very decent game. '),nl,
   print('             Player 1 is Xs and Player 2 is Os.'),nl,
   print('Choose the column you wish to put your tile using the letters. '), nl,
-  print('             Player 1 begins, Good Luck! :)'), nl.
+  print('             Player 1 begins, Good Luck! :)'), nl, echo.
 
 /*Refreshes the board */
 refresh:-
-  writeToLog(nl),
+  %writeToLog(nl),
   retractall(save(_)),
   playerturn(Turn),
   setsave([Turn]),
@@ -58,13 +58,13 @@ acttime(Act):-
   player(X, Turn),
   turns(Z),
   wins([W1,W2]),
-  %print,
-  ( Z == 42 -> refresh %print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
-  ; row(M), X == p1 -> save(Stats), writeToLog([p2|Stats]), refresh,
-    W4 is W2 + 1, setwins([W1,W4]) % print('We have a Winner and that is Maya the bot!!!'), nl
-  ; row(M), X == p2 -> save(Stats), writeToLog([p1|Stats]), refresh,
-  W3 is W1 + 1, setwins([W3,W2]) %print('We have a Winner and that is Player 1!!!'),  nl
-  ; ZE is 2 + 1). %print(Turn), print(' next!'), nl).
+  print,
+  ( Z == 42 -> refresh, print('The board is full and it is a tie.... you are equally useless! Write rematch if you want another go.'), nl
+  ; row(M), X == p1 -> save(Stats), refresh, %writeToLog([p2|Stats]), refresh,
+    W4 is W2 + 1, setwins([W1,W4]), print('We have a Winner and that is Maya the bot!!!'), nl, print
+  ; row(M), X == p2 -> save(Stats), refresh, %writeToLog([p1|Stats]), refresh,
+  W3 is W1 + 1, setwins([W3,W2]), print('We have a Winner and that is Player 1!!!'),  nl, print
+  ; print(Turn), print(' next!'), nl).
 
 /*All the accepted commands
   we can handle as inputs  */

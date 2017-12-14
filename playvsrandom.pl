@@ -1,4 +1,4 @@
-:-module(playvsmaya, [echo/0, initiate/0, place/3, element/3]).
+:-module(playvsrandom, [echo/0, initiate/0, place/3, element/3]).
 :-use_module(game).
 :-use_module(rules).
 :-use_module(printboard).
@@ -24,7 +24,7 @@ echo:-
   write('>> '),
   ( T == p1 -> readStream([Move|_]), print(Move), value(Act, Move), print(Act), acttime(Act), nl
   ; T == p1 -> print('That is not a valid command, try again mate.'), nl
-  ; maya(Act), acttime(Act), closeStream, initiateStream, board(U), parse(U, Res), sendStream(Res)),  !, echo.
+  ; randomact(Act), acttime(Act), closeStream, initiateStream, board(U), parse(U, Res), sendStream(Res)),  !, echo.
 
 /* Creates the board and starts the game */
 start:-

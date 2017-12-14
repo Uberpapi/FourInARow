@@ -114,7 +114,7 @@ def partition(inputfile):
     #for i in range(len(parsedboardstate)):
     #        print(parsedboardstate[i])
     #        print(parsedgoal[i])
-    print(arraylength(dataset), 'is the number of elements after partition')
+    print(len(dataset[1]), 'is the number of boardstates after partition')
     return dataset
 
 def arraylength(array):
@@ -135,7 +135,7 @@ def trainNeural(dataset):
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
-    mlp = MLPClassifier(hidden_layer_sizes=(50, 50, 50))
+    mlp = MLPClassifier(hidden_layer_sizes=(70, 70))
     mlp.fit(X_train,y_train)
     predictions = mlp.predict(X_test)
 
